@@ -3,6 +3,8 @@ import ReviewList from "./ReviewList";
 import { getReviews, createReviews, updateReview, deleteReview } from "../api";
 import ReviewForm from "./ReviewForm";
 import useAsync from "./hooks/useAsync";
+import { LocaleProvider } from "../context/LocaleContext";
+import LocaleSelect from "./LocalSelect";
 // import mockItems from "../mock.json";
 
 const LIMIT = 6;
@@ -84,30 +86,33 @@ export default function App() {
   };
 
   return (
-    <div>
+    <LocaleProvider defaultValue="ko">
       <div>
-        <button onClick={handleClickCreatedAt}>최신순</button>
-        <button onClick={handleClickRating}>별점순</button>
+        <LocaleSelect />
+        <div>
+          <button onClick={handleClickCreatedAt}>최신순</button>
+          <button onClick={handleClickRating}>별점순</button>
+        </div>
+        <div>
+          <ReviewForm
+            onSubmit={createReviews}
+            onSubmitSuccess={handleCreateSuccess}
+          />
+          <ReviewList
+            items={sortedItems}
+            onDelete={handleDelete}
+            onUpdate={updateReview}
+            onUpdateSuccess={handleUpdateSuccess}
+          />
+          {/* <button onClick={handleLoadClick}>불러오기</button> */}
+          {hasNext && (
+            <button disabled={isLoading} onClick={handleMore}>
+              더보기
+            </button>
+          )}
+        </div>
+        {loadingError?.message && <span>{loadingError.message}</span>}
       </div>
-      <div>
-        <ReviewForm
-          onSubmit={createReviews}
-          onSubmitSuccess={handleCreateSuccess}
-        />
-        <ReviewList
-          items={sortedItems}
-          onDelete={handleDelete}
-          onUpdate={updateReview}
-          onUpdateSuccess={handleUpdateSuccess}
-        />
-        {/* <button onClick={handleLoadClick}>불러오기</button> */}
-        {hasNext && (
-          <button disabled={isLoading} onClick={handleMore}>
-            더보기
-          </button>
-        )}
-      </div>
-      {loadingError?.message && <span>{loadingError.message}</span>}
-    </div>
+    </LocaleProvider>
   );
 }
